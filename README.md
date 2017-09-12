@@ -14,3 +14,5 @@ Run `python install.py` to start installation of conda packages.
 
 # Open a python notebook
 Run `jupyter notebook dynamics_2340.ipyb`
+
+Verify the output looks similiar to this: https://github.com/arii/olin_dynamics/blob/master/dynamics_2340.ipynb
