@@ -1,43 +1,53 @@
 #!/usr/bin/env python
 """
-Author: Arpan Rau
+Author: Ariel Anders
 Install packages for dynamics class using conda
 """
-import subprocess
+
+try:
+    import conda.cli
+except:
+    print """
+    Cannot install packages without miniconda
+    Install miniconda from https://conda.io/miniconda.html
+    """
+    raise SystemExit
 
 packages = """\
-numpy
-scipy 
-matplotlib 
-jupyter 
+-c anaconda numpy
+-c anaconda scipy 
+-c anaconda matplotlib 
+-c anaconda jupyter 
 -c https://conda.anaconda.org/kne pybox2d
--c tlatorre pygame
+-c cogsci pygame
 """
 
 pkgs = packages.strip().split("\n")
 
-Failed = False #keep track if we've failed
-
 for pkg in pkgs:
 
     try:
-        cmd = "conda install -y "+pkg
-        
+        cmd = "conda install -y %s" % pkg
+        cmd = cmd.strip().split(" ")
         print "attempting to install %s " % pkg
-        retcode = subprocess.call(cmd,shell = True)
-
-        if retcode == 1:
-        	Failed = True
-        	print "Warning could not install %s " % pkg
-
-    except OSError:
+        conda.cli.main(*cmd)
+    except:
         print "Warning could not install %s " % pkg
-        Failed = True
     
+success = 0
 
-if Failed ==True:
-	print "Could not install all packages! Go back and manually install failed packages."
-	print "YOUR ENVIORNMENT IS NOT SET UP. DO NOT PROCEED."
+for pkg in pkgs:
+    name = pkg.strip().split(" ")[-1]
+    if name == "pybox2d":
+        name = "Box2D"
+    cmd = "import %s " % name
+    try:
+        exec(cmd)
+        success +=1
+    except:
+        print "Import of package %s failed! "% name
+
+if success == len(pkgs):
+    print "Success: Done installing packages for dynamics!"
 else:
-	print "All packages installed!"
-
+    print "Warning could not install all packages"
